@@ -29,7 +29,7 @@ def parse_lines(string):
     for line in fold_lines(string):
         preceding_backslash = False
         # keys start at first non-whitespace character on line...
-        line = line.decode('unicode-escape').lstrip()
+        line = line.lstrip()
         # blank or comment; skip
         if not line or line.startswith(('#', '!')):
             continue

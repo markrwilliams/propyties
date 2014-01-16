@@ -31,7 +31,7 @@ PARSED_PROP = {u'Truth': u'Beauty',
 @pytest.mark.parametrize('input,expected',
                          [('a', {u'a': None}),
                           ('a\\t', {'a\\t': None}),
-                          ('a=b\\\\\nc', {u'a': u'b\\', u'c': None}),
+                          ('a=b\\\\\nc', {u'a': u'b\\\\', u'c': None}),
                           (RAW_PROP, PARSED_PROP)])
 def test_parse_lines(input, expected):
     assert p.parse_lines(input) == expected
