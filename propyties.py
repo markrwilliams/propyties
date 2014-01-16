@@ -23,42 +23,37 @@ def fold_lines(string):
     return lines
 
 
+SEPS = '=:\s'
+ESCAPE = r'\\'
+_KEY = ('(', ESCAPE, '.',          # any escaped character is ok
+        '|',                       # or
+        '[^', ESCAPE, SEPS, ']+',  # anything that isn't one
+                                   # of our key separators
+        ')*')
+KEY = re.compile(''.join(_KEY))
+
+_VALUE = ('(?:',
+          '(?:\s*=\s*)|(?:\s*:\s*)|\s*)',
+          '(.*)')
+VALUE = re.compile(''.join(_VALUE))
+
+KEY_VALUE = re.compile(''.join(_KEY + _VALUE))
+
+
 def parse_lines(string):
     kvs = {}
 
     for line in fold_lines(string):
-        preceding_backslash = False
         # keys start at first non-whitespace character on line...
         line = line.lstrip()
         # blank or comment; skip
         if not line or line.startswith(('#', '!')):
             continue
 
-        has_sep = False
-        key_len = 0
-
-        for key_len, c in enumerate(line):
-            if c in (':', '=') and not preceding_backslash:
-                has_sep = True
-                break
-            elif c in (' ', '\t', '\f') and not preceding_backslash:
-                break
-            if c == '\\':
-                preceding_backslash = not preceding_backslash
-            else:
-                preceding_backslash = False
-        else:
-            key_len += 1
-
-        value_start = len(line) - 1
-        for value_start, c in enumerate(line[key_len + 1:], key_len):
-            if c not in (' ', '\t', '\f'):
-                if not has_sep and c in ('=', ':'):
-                    has_sep = True
-                else:
-                    break
-
-        key, value = line[:key_len], line[value_start + 1:]
+        m = KEY_VALUE.match(line)
+        if not m:
+            continue
+        key, value = m.groups()
         kvs[key] = value or None
 
     return kvs
