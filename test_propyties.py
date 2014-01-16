@@ -8,7 +8,7 @@ import propyties as p
                           ('a\\b', ['a\\b']),
                           ('a\\\nb', ['ab']),
                           ('a\\\\nb', ['a\\\\nb']),
-                          ('a\\\n', ['a', ''])])
+                          ('a\\\n\n', ['a', ''])])  # splitlines keepends?
 def test_fold_lines(input, expected):
     assert p.fold_lines(input) == expected
 
