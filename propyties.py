@@ -25,16 +25,21 @@ def fold_lines(string):
 
 SEPS = '=:\s'
 ESCAPE = r'\\'
-_KEY = ('(', ESCAPE, '.',          # any escaped character is ok
-        '|',                       # or
-        '[^', ESCAPE, SEPS, ']+',  # anything that isn't one
-                                   # of our key separators
-        ')*')
+_KEY = ('('                       # a capturing outer group
+        '(?:',                    # non-capturing wrapper around alternation
+        ESCAPE, '.',              # any escaped character is ok
+        '|',                      # or
+        '[^', ESCAPE, SEPS, ']',  # anything that isn't one
+                                  # of our key separators
+        ')*)')
 KEY = re.compile(''.join(_KEY))
 
-_VALUE = ('(?:',
-          '(?:\s*=\s*)|(?:\s*:\s*)|\s*)',
-          '(.*)')
+_VALUE = ('(?:',                # non capturing group around alternation
+          '(?:\s*=\s*)',        # one = surrounded by spaces
+          '|',                  # or
+          '(?:\s*:\s*)',        # one : surrounded by spaces
+          '|\s*)',              # or a bunch of spaces
+          '(.*)')               # whatever's left is our value; capture it
 VALUE = re.compile(''.join(_VALUE))
 
 KEY_VALUE = re.compile(''.join(_KEY + _VALUE))
